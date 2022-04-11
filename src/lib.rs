@@ -112,7 +112,7 @@ impl SwiftWS {
             }
         }));
 
-        self.receive_loop= Option::from(thread::spawn(move || {
+        self.receive_loop = Option::from(thread::spawn(move || {
             for message in receiver.incoming_messages() {
                 let message = match message {
                     Ok(m) => m,
