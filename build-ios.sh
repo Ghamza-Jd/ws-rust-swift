@@ -1,13 +1,11 @@
 #!/bin/bash
 # cargo install --force cbindgen
-# cbindgen --lang c --output ./include/wsrustswift.h
+cbindgen --lang c --output ./include/wsrustswift.h
 
-__module="
-module WsRustSwift {
+__module="module WsRustSwift {
     header \"wsrustswift.h\"
     export *
-}
-"
+}"
 
 echo "$__module" > ./include/module.modulemap
 
