@@ -6,10 +6,10 @@ __module="module WsRustSwift {
     export *
 }
 "
-
+mkdir include
 echo "$__module" > "$__file_path"
 
-# cargo install --force cbindgen
+cargo install --force cbindgen
 cbindgen --lang c --output ./include/wsrustswift.h
 
 rustup target add aarch64-apple-ios
