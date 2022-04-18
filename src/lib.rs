@@ -1,5 +1,9 @@
 extern crate websocket;
+extern crate libc;
 
+use libc::c_char;
+use std::ffi::CStr;
+use std::str;
 use std::net::TcpStream;
 use std::sync::mpsc::{channel, Sender};
 use std::thread;
@@ -10,9 +14,12 @@ use websocket::{Message, OwnedMessage};
 use websocket::sync::Client;
 
 #[no_mangle]
-pub extern "C" fn swift_ws_new(ip_addr: &str) -> *mut SwiftWS {
+pub extern "C" fn swift_ws_new(ip_addr: *const c_char) -> *mut SwiftWS {
+    let c_buf: *const c_char = ip_addr;
+    let c_str: &CStr = unsafe { CStr::from_ptr(c_buf) };
+    let str_slice: &str = c_str.to_str().unwrap();
     Box::into_raw(Box::new(SwiftWS {
-        connection: ip_addr.parse().unwrap(),
+        connection: str_slice.parse().unwrap(),
         ws_client: None,
         send_loop: None,
         receive_loop: None,
@@ -31,21 +38,27 @@ pub extern "C" fn swift_ws_free(ptr: *mut SwiftWS) {
 }
 
 #[no_mangle]
-pub extern "C" fn swift_ws_connect(ptr: *mut SwiftWS, protocol: &str) {
+pub extern "C" fn swift_ws_connect(ptr: *mut SwiftWS, protocol: *const c_char) {
+    let c_buf: *const c_char = protocol;
+    let c_str: &CStr = unsafe { CStr::from_ptr(c_buf) };
+    let str_slice: &str = c_str.to_str().unwrap();
     let swift_ws = unsafe {
         assert!(!ptr.is_null());
         &mut *ptr
     };
-    swift_ws.connect(protocol)
+    swift_ws.connect(str_slice)
 }
 
 #[no_mangle]
-pub extern "C" fn swift_ws_send_message(ptr: *mut SwiftWS, msg: &str) {
+pub extern "C" fn swift_ws_send_message(ptr: *mut SwiftWS, msg: *const c_char) {
     let swift_ws = unsafe {
         assert!(!ptr.is_null());
         &mut *ptr
     };
-    swift_ws.send_message(msg);
+    let c_buf: *const c_char = msg;
+    let c_str: &CStr = unsafe { CStr::from_ptr(c_buf) };
+    let str_slice: &str = c_str.to_str().unwrap();
+    swift_ws.send_message(str_slice);
 }
 
 #[no_mangle]

@@ -1,13 +1,16 @@
 #!/bin/bash
-# cargo install --force cbindgen
-cbindgen --lang c --output ./include/wsrustswift.h
 
+__file_path="./include/module.modulemap"
 __module="module WsRustSwift {
     header \"wsrustswift.h\"
     export *
-}"
+}
+"
 
-echo "$__module" > ./include/module.modulemap
+echo "$__module" > "$__file_path"
+
+# cargo install --force cbindgen
+cbindgen --lang c --output ./include/wsrustswift.h
 
 rustup target add aarch64-apple-ios
 cargo build --release --target aarch64-apple-ios

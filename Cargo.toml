@@ -11,3 +11,4 @@ crate-type = [ "staticlib" ]
 
 [dependencies]
 websocket = "0.26.4"
+libc = "0.2.123"
